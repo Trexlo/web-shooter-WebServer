@@ -30,7 +30,15 @@ async function init(){
                 color VARCHAR DEFAULT '#cccccc',
                 image VARCHAR DEFAULT 'guest_gray.png'
             );
-            CREATE TYPE IF NOT EXISTS map_type AS ENUM ('campaign', 'survival');
+            --create types
+            DO $$
+            BEGIN
+                IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'map_type') THEN
+                CREATE TYPE  map_type AS ENUM ('campaign', 'survival');
+                END IF;
+                --more types here...
+            END$$;
+            
             CREATE TABLE IF NOT EXISTS map (
                 map_id INTEGER,
                 map_version INTEGER,
