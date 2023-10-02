@@ -14,7 +14,7 @@ const cookieParser = require("cookie-parser");
 
 const cors = require('cors');
 
-var ip = "127.0.0.1";
+var ip = (process.env.IP)?process.env.IP:"127.0.0.1";
 var gameServers = new Map();
 var http = require('http');
 const { writeFile, appendFile, readFile, readFileSync, writeFileSync, readdirSync } = require('fs');
