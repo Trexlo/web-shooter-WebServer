@@ -528,6 +528,8 @@ ioServer.on('connection', (socket) => {
     gameServers.set(socket.id, new GameServer(gameServerIp.toString(), gameServerPort, socket, ((socket.handshake.query.usePort)?io("wss://"+gameServerIp+":"+gameServerPort):io("wss://"+gameServerIp))));
     console.log(gameServers);
     console.log("ping server");
+    var test = io("wss://web-shooter-gameserver.onrender.com");
+    test.emit("ping");
     gameServers.get(socket.id).server.emit("ping");
   }
   socket.on("ping", (data) => {
