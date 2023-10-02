@@ -1,0 +1,8 @@
+{
+  "dependencies": {},
+  "globalDependencies": {
+    "socket.io": "registry:dt/socket.io#1.4.4+20170313110830",
+    "socket.io-client": "registry:dt/socket.io-client#1.4.4+20161116080703",
+    "three": "registry:dt/three#0.84.0+20170323144537"
+  }
+}

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link type="text/css" rel="stylesheet" href="/stylesheets/style.css">
+    <title>Welcome</title>
+</head>
+<body>  
+    <div class="formbox">
+        <div id="form-element">
+            <p class="errorElement" id="error"></p> 
+            <form id="dataForm" method="post">
+                <div class="account-element spaced" id="nameDiv" hidden="true">
+                    <label class="acc-label" id="nickOrAcc">Set nickname:</label><input class="acc-input" type="text" name="username">
+                </div>
+                <div class="account-element spaced" id="emailDiv" hidden="true">
+                    <label class="acc-label">Email:</label><input class="acc-input" type="text" name="email">
+                </div>
+                <div class="account-element spaced" id="passwordDiv" hidden="true">
+                    <label class="acc-label">Password:</label><input class="acc-input" type="password" name="password">
+                </div>
+                <div class="account-element spaced" id="repeatPasswordDiv" hidden="true">
+                    <label class="acc-label">Repeat Password:</label><input class="acc-input" type="password" name="repeatPassword">
+                </div>
+            </form>
+            <form id="fromForm" method="post" hidden>
+                <div hidden><input id="from" type="text" name="from"></div>
+            </form>
+            <button class="form-button" id="submit-button" onclick="submit()">Continue</button>
+        </div>
+        <div id="switch-buttons">
+            <button class="form-button" id="guestBtn" hidden onclick="guest()">Enter as a guest</button> <button class="form-button" id="loginBtn" onclick="login()">Log in instead</button> <button class="form-button" id="signupBtn" onclick="signup()">Create new Account</button>
+        </div>
+
+    </div>
+</body>
+<script>
+    var show = new URLSearchParams(window.location.search).get("show");
+    var action = "guest";
+    guest();
+    if(show != undefined && show == "login"){
+        login()
+    }    
+    if(show != undefined && show == "signup"){
+        signup()
+    } 
+
+    async function submit(){
+        var form = new FormData(document.getElementById("dataForm"));
+        var formdata = {};
+        form.forEach((v,k)=>{
+            formdata[k]=v;
+        })
+        var sendData;
+        switch(action){
+            case "guest":{
+                sendData=(({ username }) => ({ username }))(formdata);
+            };break;
+            case "login":{
+                sendData=(({ username, password }) => ({ username, password }))(formdata);
+            };break;
+            case "signup":{
+                sendData=(({ username, email, password, repeatPassword }) => ({ username, email, password, repeatPassword }))(formdata);
+            };break;
+        }
+
+        var req = await fetch('/'+action, {
+            method: "POST", // or 'PUT'
+            headers: {
+                "Content-Type": "application/json",
+            },
+            redirect: "follow",
+            body: await JSON.stringify(sendData),
+            });
+            console.log(req);
+        var err = await req.json()
+        console.log(err);
+        if(!err.error){
+            document.getElementById("from").value = new URLSearchParams(window.location.search).get("from");
+            document.getElementById("fromForm").action="/"+"redirect";
+            document.getElementById("fromForm").submit();
+        }else{
+            document.getElementById("error").textContent=err.message;
+        }
+        
+    }
+    function login(){
+        action = "login";
+        document.getElementById("nickOrAcc").innerText = "Account Name:";
+        document.getElementById("passwordDiv").style.display="flex"//.hidden = false;
+        document.getElementById("emailDiv").style.display="none"//.hidden = true;
+       // document.getElementById("nameDiv").style.display="none"//.hidden = true;
+        document.getElementById("repeatPasswordDiv").style.display="none"//.hidden = true;
+        document.getElementById("loginBtn").style.display="none"//.hidden = true;
+        document.getElementById("signupBtn").style.display="block"//.hidden = false;
+        document.getElementById("guestBtn").style.display="block"//.hidden = false;
+    }
+    function guest(){
+        action = "guest";
+        document.getElementById("nickOrAcc").innerText = "Set Nickname:";
+        document.getElementById("passwordDiv").style.display="none"//hidden = true;
+        document.getElementById("emailDiv").style.display="none"//hidden = true;
+       // document.getElementById("nameDiv").style.display="none"//hidden = true;
+        document.getElementById("repeatPasswordDiv").style.display="none"//hidden = true;
+        document.getElementById("loginBtn").style.display="block"//hidden = false;
+        document.getElementById("signupBtn").style.display="block"//hidden = false;
+        document.getElementById("guestBtn").style.display="none"//hidden = true;
+    }
+    function signup(){
+        action = "signup";
+        document.getElementById("nickOrAcc").innerText = "Account Name:";
+        document.getElementById("passwordDiv").style.display="flex"//hidden = false;
+        document.getElementById("repeatPasswordDiv").style.display="flex"//hidden = false;
+        document.getElementById("emailDiv").style.display="flex"//hidden = false;
+        document.getElementById("loginBtn").style.display="flex"//hidden = false;
+        document.getElementById("signupBtn").style.display="none"//hidden = true;
+        document.getElementById("guestBtn").style.display="block"//hidden = false;
+    }
+</script>
+</html>

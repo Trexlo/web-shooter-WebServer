@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link type="text/css" rel="stylesheet" href="/stylesheets/style.css">
+    <script
+    src="https://code.jquery.com/jquery-3.6.4.min.js"
+    integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8="
+    crossorigin="anonymous"></script>
+    <title>Lobby</title>
+</head>
+
+<body>
+    <div class="halfer" id="main">
+        <div  class="lobby-title"><h3 class="lobby-title-description">Lobby name:</h3> <h3><%=lobby.name%></h3></div>
+        <div  class="lobby-title"><h3 class="lobby-title-description">Map name:</h3> <h3><%=map.name%></h3></div>
+        <div class="player-list lobby-list">
+            <h3>Players</h3>
+            <div id="players">
+                <% if(!lobby.isGameSave) for( var p of players ) { %>
+                    <div class="lobby-player">
+                        <%= p.nickname %>
+                    </div>
+                <% } %>
+                
+                <% if(lobby.isGameSave) 
+                for( var p of lobby.saveData.players ) { %>
+                    <div class="lobby-player">
+                        <span>
+                            Player <%=p.number%> was:<%=p.nickname%>, now is <span id="position<%=p.number%>"><input type="text" hidden  class="prevId" value="<%=p.id%>"><input type="text" hidden  class="newId" value=""><span>&lt empty &gt</span></span>
+                        </span> 
+                        
+                        <button  <% if (player.id != lobby.host) {  %> hidden <% } %> value="<%=p.number%>" class="move-button moveUp">⬆</button>
+                        <button  <% if (player.id != lobby.host) {  %> hidden <% } %> value="<%=p.number%>" class="move-button moveDown">⬇</button>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+        <!-- <form method="POST" action="/startGame"> -->
+        <form id="gameForm">
+            <input type="text" id="id" name="id" hidden >
+            <input type="text" name="mapId" hidden value="<%=map.id%>">
+        </form>
+        
+        <button <% if (player.id != lobby.host) {  %> hidden <% } %> class="form-button" id="startBtn">Start</button>
+        <div class="center-text account-element">
+            <div id="spinner" hidden class="spinner"></div>    
+            <p id="info"></p>
+        </div>
+            <a class="form-button" href="/">Leave</a>
+    </div>
+</body>
+<script>
+
+
+
+    function showCreateLobby() {
+        document.getElementById("createLobby").hidden = false;
+        document.getElementById("menu").hidden = true;
+    }
+    function backToMenu() {
+        document.getElementById("createLobby").hidden = true;
+        document.getElementById("menu").hidden = false;
+    }
+
+
+</script>
+<script type="module">
+
+
+    import { io } from 'https://cdn.socket.io/4.4.1/socket.io.esm.min.js';
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    document.getElementById("id").value = urlParams.get("id");
+    const myId="<%=player.id%>";
+    const socket = io("ws://<%=ip%>:3000", { query: { gameId:urlParams.get("id"),  playerId: "<%=player.id%>", at:"lobby" } });
+    var positions={}
+    function moveUp(position, visual = false) {
+        if(!visual)
+            socket.emit('movePlayer', {position:position, direction:"up"});
+        else{
+            var aPos = $('#position'+position);
+            var bPos=  $('#position'+((position-1 == -1)?maxPosition:position-1));
+            var tmpVal = aPos.find('.newId').val()
+            var tmpTxt = aPos.find('span').text();
+            aPos.find('.newId').val(bPos.find('.newId').val())
+            aPos.find('span').text(bPos.find('span').text());
+            bPos.find('.newId').val(tmpVal);
+            bPos.find('span').text(tmpTxt);
+        }
+    }
+    function moveDown(position, visual = false) {
+        if(!visual)
+            socket.emit('movePlayer', {position:position,  direction:"down"});
+        else{
+            var aPos = $('#position'+position);
+            var bPos=  $('#position'+((position+1 > maxPosition)?0:position+1));
+            var tmpVal = aPos.find('.newId').val()
+            var tmpTxt = aPos.find('span').text();
+            aPos.find('.newId').val(bPos.find('.newId').val())
+            aPos.find('span').text(bPos.find('span').text());
+            bPos.find('.newId').val(tmpVal);
+            bPos.find('span').text(tmpTxt);
+        }
+    }
+    $('.moveUp').each(function(i, obj) {
+        obj.addEventListener('click', ()=>{moveUp(Number.parseInt(obj.value));})
+    });
+    $('.moveDown').each(function(i, obj) {
+        obj.addEventListener('click', ()=>{moveDown(Number.parseInt(obj.value));})
+    });
+    socket.on('movedPlayer', (data) => {
+        if(data.direction == "up")moveUp(data.position, true);
+        if(data.direction == "down")moveDown(data.position, true);
+    })
+    localStorage.setItem("player", JSON.stringify({
+        id: "<%=player.id%>",
+        nickname: "<%=player.nickname%>",
+        image: "<%=player.image%>"
+    }));
+
+    socket.emit('joinedLobby', { id: urlParams.get("id") });
+    socket.io.on("reconnect", (attempt) => {
+        window.location.reload();
+        //socket.emit('joinedLobby', { id: urlParams.get("id") });
+    });
+
+    var maxPosition=0;
+    var playerList = document.getElementById("players");
+    socket.on('lobbyPlayersChange', (data) => {
+        console.log("change");
+        console.log(data);
+        if(!<%=lobby.isGameSave%>){
+            playerList.innerHTML = "";
+            for (var d of data.players) {
+                playerList.innerHTML += `<div class="lobby-player">` + d.nickname + `</div>`;
+            }
+        }else{
+            console.log("gamesave");
+            var currPos = 0;
+            var players = new Map(data.players.map(p => {
+                    return [p.id, p];
+            }),);
+            for(var o in data.lobby.playerOrder){
+                if($('#position'+o).length != 0){
+                    var order = data.lobby.playerOrder[o];
+                    if(order.newId){
+                        $('#position'+o).find('.newId').val(order.newId);
+                        $('#position'+o).find('span').text(players.get(order.newId).nickname);
+                    }else{
+                        $('#position'+o).find('.newId').val(undefined);
+                        $('#position'+o).find('span').text("< empty >");
+                    }
+                }
+            }
+        }
+        if(data.host==myId) document.getElementById("startBtn").hidden=false;
+    })
+    socket.on('disconnection', (data) => {
+        console.log("disconnection");
+        console.log(data);
+        playerList.innerHTML = "dced";
+    })
+
+    socket.on('gameStarted', (data)=>{
+        console.log("game started");
+        console.log(data);
+        window.location.assign(data.url)
+    })
+    async function startGame(){
+        var form = new FormData(document.getElementById("gameForm"));
+        positions = {};
+        var currPos=0;
+        while($('#position'+currPos).length != 0){
+                positions[currPos]=$('#position'+currPos).find('.newId').val();
+                currPos++;
+        }
+        $("#info").text("Looking for nearest server");
+        $("#info").css("margin-left","50px");
+        $("#spinner").attr("hidden", false);
+        var serverReq = await fetch('/getServers',{
+            method:'POST', 
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                lobbyId: urlParams.get("id")
+            }
+        )
+        });
+        var serverData = await serverReq.json();
+        var server = null;
+        console.log(serverData.message);
+        console.log(serverData);
+        if(!serverData.error){
+            for(var s of serverData.servers){
+                const pingsocket = io(`ws://${s.ip}:${s.port}`, { 
+                    query: {type:"pinger"}
+                });
+                console.log(pingsocket);
+                console.log("pinging");
+                
+               
+                pingsocket.emit('ping', ()=>{
+                    console.log("ping came");
+                    if(server==null){
+                        server = {id:s.id, ip:s.ip, port:s.port}
+                        console.log(server);
+                        fetch('/startGame',{
+                            method:'POST', 
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                                id: urlParams.get("id"),
+                                positions: positions,
+                                serverId: server.id,
+                            }
+                        )
+                        }).then(res=> res.json())
+                        .then(val=>{
+                            $("#info").text("Found server");
+                            $("#spinner").attr("hidden", true);
+                            $("#info").css("margin-left","0px");
+                            console.log(val);
+                        }).catch(err=>{
+                            console.log(err);
+                        });
+                    }
+                });
+            }
+            setTimeout(() => {
+                if(server==null)
+                $("#info").text("No servers found");
+                $("#spinner").attr("hidden", true);
+                $("#info").css("margin-left","0px");
+            }, 3000);
+            console.log("found no servers");
+
+        }
+
+        
+    }
+    document.getElementById("startBtn").onclick=startGame;
+</script>
+
+</html>

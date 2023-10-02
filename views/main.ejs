@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <link type="text/css" rel="stylesheet" href="/stylesheets/style.css">
+    <script
+    src="https://code.jquery.com/jquery-3.6.4.min.js"
+    integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8="
+    crossorigin="anonymous"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="header">
+        
+        <div class="headerContainer" id="menu"><%- include("./menu.ejs") %></div>
+        
+
+        <div  class="headerContainer">
+            <p class="center-text-big">Nickname:</p><input class="name-input" oninput="changeNick(this)" type="text" value="<%=player.nickname%>">
+            <img class="image-right" src="/images/userImages/<%=player.image%>">
+        </div>
+        <div class="headerContainer">
+            <% if (player.guest) { %>
+                <a class="form-button header-element" href="/login?show=login">Log in</a>
+                <a class="form-button header-element" href="/login?show=signup">Sign up</a>
+            <% } else { %>
+                <a class="form-button header-element" href="/account">Account settings</a>
+                <a class="form-button header-element" href="/signout">Sign out</a>
+            <% } %>
+        </div>
+
+        
+    </div>
+    <div id="content">
+        <div class="halfer" id="main">
+            <div hidden id="createLobby"><%- include("./createLobby.ejs") %></div>
+            <div hidden id="loadLobby"><%- include("./createLoadLobby.ejs") %></div>
+        </div>
+        <div class="halfer" id="lobbyList">
+            <% JSON.stringify(lobbies) %>
+            <% lobbies.forEach(lobby => { %>
+                <div class ="lobby">
+                    <p class="lobbyName"><%= lobby.name%></p>
+                    <p><%=lobby.players.length%> Players</p>
+                    <a class="form-button" href="/lobby?id=<%=lobby.id%>">Join<%if(lobby.hasPassword){%>(🔒)<%}%></a>
+                </div>
+            <% }) %>
+        </div>
+    </div>
+    
+</body>
+<script>
+    
+
+    function showCreateLobby(){
+        $("#create-lobby-button").addClass('form-button-active');
+        $("#create-load-lobby-button").removeClass('form-button-active');
+        document.getElementById("createLobby").hidden=false;
+        //document.getElementById("menu").hidden=true;
+        document.getElementById("loadLobby").hidden=true;
+    }
+    function showLoadLobby(){
+
+        if(<%=player.guest%>)window.location.assign('/login?from=/');
+        $("#create-load-lobby-button").addClass('form-button-active');
+        $("#create-lobby-button").removeClass('form-button-active');
+        document.getElementById("createLobby").hidden=true;
+        document.getElementById("loadLobby").hidden=false;
+        //document.getElementById("menu").hidden=true;
+    }
+    function backToMenu(){
+        document.getElementById("createLobby").hidden=true;
+        document.getElementById("loadLobby").hidden=true;
+        $("#create-lobby-button").removeClass('form-button-active');
+        $("#create-load-lobby-button").removeClass('form-button-active');
+        //document.getElementById("menu").hidden=false;
+    }
+    showCreateLobby();
+    var stopTyping=null;
+    function changeNick(el){
+        if(stopTyping) clearTimeout(stopTyping)
+        stopTyping = setTimeout(() => {
+            fetch('/changeNickname', {
+                method:'POST',
+                headers:{
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({nickname: el.value})
+            }).then(res=> res.json())
+            .then(val=> console.log(val))
+            .catch(err=> console.log(err));
+        }, 500);
+        //el.value
+    }
+ 
+</script>
+<script type="module">
+  import { io } from 'https://cdn.socket.io/4.4.1/socket.io.esm.min.js';
+  const socket = io("ws://<%=ip%>:3000");
+  
+  var lobbyListEl = document.getElementById("lobbyList");
+  socket.on('lobbiesUpdate', (data)=>{
+    console.log(data);
+    lobbyListEl.innerHTML="";
+
+    for(var l of data.lobbies){
+        console.log(l);
+        var lobby = document.createElement('div');
+        lobby.className="lobby";
+        var lobbyName =  document.createElement('p');
+        lobbyName.className="lobbyName";
+        lobbyName.textContent=l.name;
+        var playerTitle =  document.createElement('p');
+        playerTitle.textContent=l.players.length+" Players";
+        lobby.appendChild(lobbyName);
+        lobby.appendChild(playerTitle);
+        var linkTo =  document.createElement('a');
+        linkTo.href="/lobby?id="+l.id;
+        linkTo.textContent="Join"+((l.hasPassword!='')?'(🔒)':'');
+        linkTo.classList.add("form-button")
+        lobby.appendChild(linkTo);
+        lobbyListEl.appendChild(lobby);
+    }
+  })
+</script>
+</html>

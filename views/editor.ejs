@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>My first three.js app</title>
+
+    <link type="text/css" rel="stylesheet" href="/stylesheets/style.css">
+    <style>
+
+    </style>
+</head>
+
+<body>
+  <div id="game"></div>
+  <div id="container">
+    <input hidden type="number" name="fps" id="fps">
+    <label class="menu-item center-text">Set map type</label>
+    <div>
+      <select class="form-button" id="maptype">
+        <option value="survival">Survival</option>
+        <option value="campaign">Campaign</option>
+      </select>
+    </div>
+    <button class="form-button" id="openSave">Save map</button>
+    <button class="form-button" id="place">Place</button>
+    <button class="form-button" id="erase">Erase</button>
+    <button class="form-button" id="edit">Edit</button>
+    <button class="form-button" id="move">Move Elements</button>
+
+    <div>
+      <button class="form-button" id="foundation-popup-button">Edit Foundation</button>
+      <div hidden id="foundation-popup">
+        <div id="foundation-color">
+          <div class="color-slider-block">R:<input class="color-slider" type="range" value="256" min="0" max="256" step="1" id="foundation-colorR" name="colorR"></div>
+          <div class="color-slider-block">G:<input class="color-slider" type="range" value="256" min="0" max="256" step="1" id="foundation-colorG" name="colorG"></div>
+          <div class="color-slider-block">B:<input class="color-slider" type="range" value="256" min="0" max="256" step="1" id="foundation-colorB" name="colorB"></div>
+        </div>
+        <div>
+          <select id="foundation-texSelect">
+            <option value="none">None</option>
+            <% textures.forEach(t => { %>
+              <option value="/images/textures/<%=t%>"><%=t[0].toUpperCase()+t.slice(1,t.indexOf('.png'))%></option>
+            <% }) %>
+          </select>
+        </div>
+      </div>
+    </div>
+    <button class="form-button" id="spawn">Set spawn</button>
+    <button hidden class="form-button" id="goal">Set goal</button>
+    
+    <button class="form-button" id="navMeshBtn">Generate NavMesh</button>
+    <p  class="menu-item center-text">Status:<span id="status">editing</span></button>
+  </div>
+  <input class="slider" type="range" value="1" min="0.1" max="1" step="0.1" id="width" name="width">
+  <input class="slider" type="range" value="0" min="-0.5" max="0.5" step="0.05" id="posX" name="posX">
+  <input class="slider" type="range" value="1" min="0.1" max="1" step="0.1" id="depth" name="depth">
+  <input class="slider" type="range" value="0" min="-0.5" max="0.5" step="0.05" id="posZ" name="posZ">
+  <div id="color">
+    <div class="color-slider-block">R:<input class="color-slider" type="range" value="256" min="0" max="256" step="1" id="colorR" name="colorR"></div>
+    <div class="color-slider-block">G:<input class="color-slider" type="range" value="256" min="0" max="256" step="1" id="colorG" name="colorG"></div>
+    <div class="color-slider-block">B:<input class="color-slider" type="range" value="256" min="0" max="256" step="1" id="colorB" name="colorB"></div>
+  </div>
+  <div id="texSelect-block">
+    <img id="texSelect-image" src="">
+    <select class="form-button" id="texSelect">
+      <option value="none">None</option>
+      <% textures.forEach(t => { %>
+        <option value="/images/textures/<%=t%>"><%=t[0].toUpperCase()+t.slice(1,t.indexOf('.png'))%></option>
+      <% }) %>
+    </select>
+  </div>
+  <div class="prompt" id="plane-size-prompt">
+    <p >Choose map size:</p>
+    <select class="form-button"  id="plane-size">
+      <option value="100">Small</option>
+      <option value="150">Medium</option>
+      <option value="200">Large</option>
+    </select>
+    <button class="form-button"  id="plane-size-button">OK</button>
+  </div>
+  <div class="prompt" id="save-map-prompt">
+    <label for="name">Map Name:</label>
+    <input  type="text" name="name" id="name">
+    <button class="form-button" id="saveBtn">Save map</button>
+    <button class="form-button" id="cancelBtn">Cancel</button>
+  </div>
+</body>
+<style>
+  body {
+        margin: 0;
+        padding :0
+  }
+  #game{
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  #container{
+    position: absolute;
+    display: flex;
+  }
+  .slider{
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+
+  #width{
+    top: 175px;
+  }
+  #posX{
+    top: 200px;
+  }
+  #depth{
+    top: 81px;
+    right: 105px;
+    rotate: 90deg;
+  }
+  #posZ{
+    top: 81px;
+    right: 130px;
+    rotate: 90deg;
+  }
+  #color{
+    color: whitesmoke;
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 225px;
+    right: 0;
+  }
+  .color-slider-block{
+    display: flex;
+    text-align: center;
+    vertical-align: middle;
+  }
+  #texSelect-block{
+    position: absolute;
+    top: 325px;
+    right: 0;
+    display: flex;
+  }
+  #texSelect-block img{
+    width: 50px;
+    height: 50px;
+  }
+  #texSelect{
+    
+  }
+  #foundation-popup{
+    position: absolute;
+    background: rgba(1,1,1,0.5);
+    color: white;
+  }
+  .prompt *{
+    margin-bottom: 10px;
+  }
+  .prompt{
+    display: none;
+    position: absolute;
+    background: rgba(1,1,1,0.5);
+    color: white;
+    width: 250px;
+    height: 250px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .hidden-element{
+    display: none;
+  }
+  .menu-item{
+    background-color: rgba(22, 22, 22, 0.637);
+    border: 1px solid rgba(22, 22, 22, 0.24);
+    /* border-radius: 20px; */
+    color: white;
+    width: 120px;
+    height: 50px;
+    vertical-align: middle;
+    font-size: 18px;
+    box-sizing:border-box;
+    margin: 0;
+    text-align: center;
+  }
+</style>
+<script type="importmap">
+    {
+      "imports": {
+        "socket.io-client": "https://cdn.socket.io/4.4.1/socket.io.esm.min.js",
+        "three": "https://unpkg.com/three@0.151.3/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.151.3/examples/jsm/",
+        "jquery": "https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"
+      }
+    }
+</script>
+
+<script src="javascripts/editor.js" type="module"></script>
+</html>

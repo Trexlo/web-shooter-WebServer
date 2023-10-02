@@ -1,0 +1,40 @@
+
+<body>
+    <div id="main">
+        <form class = "lobby-create" action="/createLoadLobby" method="post">
+            <label class="lobby-menu-label"  for="saveId" >Choose a save:</label>
+            <select  class="lobby-select" name="saveId">
+                <% for( var s of saves ) { %>
+                    <option value="<%=s.id%>" ><%=s.savedOn.toLocaleString()%> - <%=maps.find(x=>x.id == s.mapId).name%> - <%=maps.find(x=>x.id == s.mapId).type%></option>
+                <% } %>
+            </select>
+            <label class="lobby-menu-label" for="lpassword">Password:</label><input class="lobby-input" name="password" type="password" placeholder="None" id="lpassword"/>
+            <label class="lobby-menu-label" for="lprivate">Private?:</label><input class="lobby-input checkmark" name="private" type="checkbox"  id="lprivate"/>
+            <button class="form-button" type="submit">Create</button>
+        </form>
+        <button class="form-button" onclick="backToMenu()">Back</button>
+    </div>
+
+</body>
+<style>
+    .typecampaign{
+        display: block;
+    }
+    .typesurvival{
+        display: block;
+    }
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+<script>
+
+    function check(el, type){
+        if(el.checked){
+            $('.type'+type).css('display', 'block');
+        }else
+            $('.type'+type).css('display', 'none');
+    }
+    function createLobby(){
+        console.log()
+    }
+    
+</script>

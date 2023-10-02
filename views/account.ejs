@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link type="text/css" rel="stylesheet" href="/stylesheets/style.css">
+    <title>Welcome</title>
+</head>
+<body>
+    <div class="account-container">
+        <div class="account-element spaced"><h3>Your Account</h3><p class=" errorElement acc-input center-text" id="error"></p></div> 
+        <div class="account-element spaced" id="nameDiv"><label class="acc-label">Your name:</label><input class="acc-input" value="<%=player.username%>" oninput="change(this,'username')" type="text", name="username"></div>
+        <div class="account-element spaced" id="emailDiv"><label class="acc-label">Email:</label><input class="acc-input"  value="<%=playerEmail%>" oninput="change(this,'email')" type="text", name="email"></div>
+        <div class="account-element spaced" id="newPasswordDiv"><label class="acc-label">New Password:</label><input class="acc-input"  oninput="change(this,'newPassword')" type="password", name="newPassword"></div>
+        <div class="account-element spaced" id="currentPasswordDiv" style="display:none"><label class="acc-label">Current password:</label><input class="acc-input"  oninput="change(this,'currentPassword')" type="password", name="currentPassword"></div>
+        <div class="account-element" id="imageDiv">
+            <img id="imginp" src="/images/userImages/<%=player.image%>">
+            <label for="img" class="center-text account-element form-button" >Change Image</label>
+            <input hidden class="account-element form-button " type="file" id="img" name="img" accept="image/*" onload="image">
+        </div>
+        <div class="account-element" id="colorDiv">
+            <label class=" acc-label center-text account-element  " for="colorSlider">Change Color</label>
+            <input id="colorSlider" type="color" value="<%=player.color%>" onchange="color(this)">
+            <canvas hidden class="color-canvas" id="colorCnv" width="64" height="64"></canvas>
+        </div>
+        <button class="center-text account-element form-button" id="save" onclick="saveChanges()"><div id="spinner" class="spinner" hidden></div><span id="save-text">Save Changes</span></button>
+        <a class="center-text account-element form-button" href="/">Back</a>
+    </div>
+    <canvas id="canv" width="256" height="256" hidden></canvas>
+    <div id="maplist">
+        <h1>Your maps</h1>
+        <% for( let m of maps ) { %>
+            <div class="lobby map-container spaced">
+                <p class = "map-name"><%=m.name%> - <%=m.type%></p><a class="form-button" href="createMap?type=edit&id=<%=m.id%>&version=<%=m.version%>">Edit map</a>
+            </div>
+        <% } %>
+    </div>
+</body>
+
+<script>
+    var canvas = document.createElement('canvas'),
+    context = canvas.getContext('2d');
+    canvas.width=256;
+    canvas.height=256;
+    var chooseFile = document.getElementById("img");
+    document.getElementById("img").onchange=image;
+    var accData = {};
+    function change(ev, type){
+        if(type=="newPassword" || type=="email"){
+            document.getElementById("currentPasswordDiv").style.display=(ev.value.length==0)?"none":"flex";
+        }
+        accData[type] = ev.value;
+    }
+    function image(){
+      
+        const files = chooseFile.files[0];
+        if (files) {
+            const fileReader = new FileReader();
+            fileReader.readAsDataURL(files);
+            fileReader.addEventListener("load", function () {
+                var base_image = new Image();
+                base_image.src = this.result;
+                //context.drawImage(base_image);
+                base_image.onload = function(){
+                    var a = (base_image.width>base_image.height)?base_image.height:base_image.width;
+                    if(base_image.width>base_image.height){
+                        context.drawImage(base_image, base_image.width/2 - a/2, 0, a, a, 0, 0,256, 256);
+                    }else{
+                        context.drawImage(base_image, 0, base_image.height/2 - a/2, a, a, 0, 0,256, 256);
+                    }
+                    document.getElementById("imginp").src=canvas.toDataURL();
+                    accData["image"] = canvas.toDataURL();
+                }
+
+
+            });    
+        }
+    }
+    function color(el){
+        colorCtx.beginPath();
+        colorCtx.rect(0, 0, 64, 64);
+        colorCtx.fillStyle= el.value;
+        colorCtx.fill();
+        accData.color = el.value
+    }
+    function saveChanges(){
+        document.getElementById("spinner").hidden=false;
+        document.getElementById("save").disabled=true;
+        document.getElementById("save-text").textContent="Saving";
+        fetch('/changeAccountInfo', {
+            method:'POST',
+            headers:{
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(accData)
+        }).then(res=> res.json())
+        .then(val=> {
+                
+            document.getElementById("save").disabled=false;
+            document.getElementById("spinner").hidden=true;
+            document.getElementById("save-text").textContent="Save changes";
+            document.getElementById("error").textContent=val.message;
+        })
+        .catch(err=> console.log(err));
+    }
+    var cnv = document.getElementById("colorCnv");
+    var colorCtx = cnv.getContext('2d');
+    colorCtx.beginPath();
+    colorCtx.rect(0, 0, 64, 64);
+    colorCtx.fillStyle= "<%=player.color%>";;
+    colorCtx.fill();
+    
+</script>
+</html>

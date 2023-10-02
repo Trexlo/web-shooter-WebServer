@@ -1,0 +1,5 @@
+
+    <button id="create-lobby-button" class="form-button header-element" onclick="showCreateLobby()">Create Lobby</button>
+    <button id="create-load-lobby-button" <% if (player.guest) {  %> hidden <% } %>  class="form-button header-element" onclick="showLoadLobby()"><% if (player.guest) {  %> Log in to load games <% }else{ %> Load game <%}%></button>
+    <a class="form-button header-element" href="/createMap"><% if (player.guest) {  %> Log in to create maps <% }else{ %> Create map <%}%></a>
+

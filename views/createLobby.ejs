@@ -1,0 +1,45 @@
+
+<body>
+    <div id="main">
+        <form class="lobby-create" action="/createLobby" method="post">
+            <label class="lobby-menu-label" for="name">Lobby name:</label><input class="lobby-input"  name="name" type="text"  id="name"/>
+            <label class="lobby-menu-label" for="map">Select map: </label>
+            <select class="lobby-select" name="map">
+                <% for( var m of maps ) { %>
+                    <option class="type<%=m.type%>" value="<%=m.id%>,<%=m.version%>" ><%=m.name%> - <%=m.type%></option>
+                <% } %>
+            </select>
+            <div class="lobby-input " ><label class="lobby-menu-label" >Type filter: </label>
+                <label class="lobby-menu-label" for="campaign-checkbox">Campaign:</label><input class="lobby-input checkmark" id="campaign-checkbox" type="checkbox" checked="true" onchange="check(this, 'campaign')"> 
+                <label class="lobby-menu-label" for="survival-checkbox">Survival:</label><input class="lobby-input checkmark" id="survival-checkbox"  type="checkbox" checked="true" onchange="check(this, 'survival')"> 
+            </div>
+            <label class="lobby-menu-label" for="password">Password:</label><input class="lobby-input"  name="password" type="password" placeholder="None" id="password"/>
+            <label class="lobby-menu-label" for="private">Private?:</label><input class="lobby-input checkmark"  name="private" type="checkbox"  id="private"/>
+            <button class="form-button" type="submit">Create</button>
+        </form>
+        <button class="form-button" onclick="backToMenu()">Back</button>
+    </div>
+
+</body>
+<style>
+    .typecampaign{
+        display: block;
+    }
+    .typesurvival{
+        display: block;
+    }
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+<script>
+
+    function check(el, type){
+        if(el.checked){
+            $('.type'+type).css('display', 'block');
+        }else
+            $('.type'+type).css('display', 'none');
+    }
+    function createLobby(){
+        console.log()
+    }
+    
+</script>
