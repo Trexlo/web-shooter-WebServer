@@ -30,7 +30,7 @@ async function init(){
                 color VARCHAR DEFAULT '#cccccc',
                 image VARCHAR DEFAULT 'guest_gray.png'
             );
-            --CREATE TYPE map_type AS ENUM ('campaign', 'survival');
+            CREATE TYPE IF NOT EXISTS map_type AS ENUM ('campaign', 'survival');
             CREATE TABLE IF NOT EXISTS map (
                 map_id INTEGER,
                 map_version INTEGER,
