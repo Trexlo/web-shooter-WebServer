@@ -99,10 +99,8 @@
 </script>
 <script type="module">
   import { io } from 'https://cdn.socket.io/4.4.1/socket.io.esm.min.js';
-  const socket = io("wss://web-shooter-webserver.onrender.com");
+  const socket = io("ws://web-shooter-webserver.onrender.com");
   socket.emit('ping');
-  const socket2 = io("ws://web-shooter-webserver.onrender.com");
-  socket2.emit('ping');
   var lobbyListEl = document.getElementById("lobbyList");
   socket.on('lobbiesUpdate', (data)=>{
     console.log(data);
