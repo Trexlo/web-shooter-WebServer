@@ -488,13 +488,13 @@ app.get('*', (req, res, next) => {
 
 
 
+const httpServer = createServer(app);
+// var server = app.listen(port, () => {
+//   console.log(`Example app listening on port ${port}`)
+// })
 
-var server = app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
 
-
-const ioServer = new Server(server, {
+const ioServer = new Server(httpServer, {
   cors: true,
   origins: ["*"]
 });
