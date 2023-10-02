@@ -507,7 +507,7 @@ function initSocket() {
     var ip = localStorage.getItem("serverIp");
     var port = localStorage.getItem("serverPort");
     console.log("init with ip and port: " + ip+":"+port);
-    socket = io("ws://" + ip + ":" + port, {
+    socket = io("wss://" + ip, {
         //withCredentials: true,
         query: {
             gameId: gId,
