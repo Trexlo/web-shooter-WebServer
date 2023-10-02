@@ -496,8 +496,9 @@ server.keepAliveTimeout = 120 * 1000;
 server.headersTimeout = 120 * 1000;
 
 const ioServer = new Server(server, {
-  cors: true,
-  origins: ["*"]
+  cors: {
+    origin: "*",
+  }
 });
 
 const sessionMiddleware = expressSession({
