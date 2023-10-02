@@ -237,6 +237,7 @@ app.get('/', async (req, res) => {
   var saves=[];
   if(!req.session.user.guest) saves =  await getSavesFromPlayer(req.session.user.id);
   console.log(saves);
+  console.log("GET / "+req.socket.localAddress +","+ req.socket.remoteAddress+","+ip);
   res.render('main', { lobbies: getLobbies(), saves:saves, ip: (req.socket.localAddress == req.socket.remoteAddress) ? "localhost" : ip, maps: maplist, player: req.session.user });
 })
 app.get('/account', async (req, res) => {
