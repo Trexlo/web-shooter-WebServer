@@ -2,11 +2,10 @@ const pg = require('pg');
 const { Player, GameMap, GameSave } = require('./classes');
 
 const pgPool = new pg.Pool({
-    host: process.env.DBHOST,
-    user: process.env.DBUSER,
-    database: process.env.DBNAME,
-    password: process.env.DBPASSWORD,
-    port: process.env.DBPORT
+    connectionString: process.env.DBConfigLink,
+    ssl: {
+        rejectUnauthorized: false
+    }
   });
 
 async function destroyDB(){
