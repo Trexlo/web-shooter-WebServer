@@ -1,6 +1,6 @@
 const express = require('express')
 const app = express()
-const port = 3000
+const port = (process.env.PORT)?process.env.PORT:3000
 const path = require('path');
 const { Server } = require("socket.io");
 const { io } = require('socket.io-client');
@@ -489,7 +489,7 @@ app.get('*', (req, res, next) => {
 
 
 
-var server = https.createServer(app).listen(port, () => {
+var server = app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
 server.keepAliveTimeout = 120 * 1000;
