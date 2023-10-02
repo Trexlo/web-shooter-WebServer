@@ -525,6 +525,8 @@ ioServer.on('connection', (socket) => {
     if(socket.handshake.query.overrideAddress == 'true'  && socket.handshake.query.ip) gameServerIp = socket.handshake.query.ip;
     gameServers.set(socket.id, new GameServer(gameServerIp.toString(), gameServerPort, socket, (socket.handshake.query.usePort)?io("ws://"+gameServerIp+":"+gameServerPort):io("ws://"+gameServerIp)));
     console.log(gameServers);
+    console.log("ping server");
+    gameServers.get(socket.id).server.emit("ping");
   }
   socket.on("ping", (data) => {
     console.log("PONG");
