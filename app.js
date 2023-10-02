@@ -523,7 +523,9 @@ ioServer.on('connection', (socket) => {
     gameServers.set(socket.id, new GameServer(gameServerIp.toString(), gameServerPort, socket, io("ws://"+gameServerIp+":"+gameServerPort)));
     console.log(gameServers);
   }
-  
+  socket.on("ping", (data) => {
+    console.log("PONG");
+  })
   socket.on("emptyLobby", (data) => {
     console.log("emptyLobby");
     console.log(data);

@@ -100,7 +100,7 @@
 <script type="module">
   import { io } from 'https://cdn.socket.io/4.4.1/socket.io.esm.min.js';
   const socket = io("wss://<%=ip%>:3000");
-  
+  socket.emit('ping');
   var lobbyListEl = document.getElementById("lobbyList");
   socket.on('lobbiesUpdate', (data)=>{
     console.log(data);
