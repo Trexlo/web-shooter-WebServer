@@ -17,6 +17,7 @@ console.log("IP ENV: " + process.env.IP);
 var ip = (process.env.IP)?process.env.IP:"127.0.0.1";
 var gameServers = new Map();
 var http = require('http');
+var https = require('https')
 const { writeFile, appendFile, readFile, readFileSync, writeFileSync, readdirSync } = require('fs');
 const { pgPool, editUsername, signup, login, getUserById, editImage, editNickname, getMaps, saveNewMap, loadMap, getPlayerByUUID, editColor, getMapsFromPlayer, saveExistingMap, saveGame, getSavesFromPlayer, loadGame, editEmail, editPassword, getPasswordForUser, comparePassword, getUserEmail } = require('./data/dao');
 const { Player, Lobby, GameServer } = require('./data/classes');
@@ -488,13 +489,13 @@ app.get('*', (req, res, next) => {
 
 
 
-const httpServer = http.createServer(app);
+const httpsServer = https.createServer(app);
 // var server = app.listen(port, () => {
 //   console.log(`Example app listening on port ${port}`)
 // })
 
 
-const ioServer = new Server(httpServer, {
+const ioServer = new Server(httpsServer, {
   cors: true,
   origins: ["*"]
 });
