@@ -238,7 +238,7 @@ app.get('/', async (req, res) => {
   if(!req.session.user.guest) saves =  await getSavesFromPlayer(req.session.user.id);
   console.log(saves);
   console.log("GET / "+req.socket.localAddress +","+ req.socket.remoteAddress+","+ip);
-  res.render('main', { lobbies: getLobbies(), saves:saves, ip: (req.socket.localAddress == req.socket.remoteAddress) ? "localhost" : ip, maps: maplist, player: req.session.user });
+  res.render('main', { lobbies: getLobbies(), saves:saves, ip: ip, maps: maplist, player: req.session.user });
 })
 app.get('/account', async (req, res) => {
   res.render('account', {player: req.session.user, playerEmail:await getUserEmail(req.session.user.id), maps: await getMapsFromPlayer(req.session.user.id, false)});
@@ -303,7 +303,7 @@ app.get('/lobby', async (req, res) => {
         player: req.session.user, 
         lobby: currLobby,
         players: Array.from(currLobby.players.values()),
-        ip: (req.socket.localAddress == req.socket.remoteAddress) ? "localhost" : ip,
+        ip: ip,
         map: maplist.find(x=> x.id == currLobby.mapId && x.version == currLobby.mapVersion )
       });
     }
