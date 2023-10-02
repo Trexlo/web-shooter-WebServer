@@ -520,7 +520,7 @@ ioServer.on('connection', (socket) => {
     if(gameServerIp == '127.0.0.1') gameServerIp = ip;
     if(socket.handshake.query.port != undefined) gameServerPort = socket.handshake.query.port;
     if(socket.handshake.query.overrideAddress == 'true'  && socket.handshake.query.ip) gameServerIp = socket.handshake.query.ip;
-    gameServers.set(socket.id, new GameServer(gameServerIp.toString(), gameServerPort, socket, io("ws://"+gameServerIp+":"+gameServerPort)));
+    gameServers.set(socket.id, new GameServer(gameServerIp.toString(), gameServerPort, socket, (socket.handshake.query.usePort)?io("ws://"+gameServerIp+":"+gameServerPort):io("ws://"+gameServerIp)));
     console.log(gameServers);
   }
   socket.on("ping", (data) => {
