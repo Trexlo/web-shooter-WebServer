@@ -497,7 +497,7 @@ server.headersTimeout = 120 * 1000;
 
 const ioServer = new Server(server, {
   cors: {
-    origin: "*",
+    origin: false,
   }
 });
 
