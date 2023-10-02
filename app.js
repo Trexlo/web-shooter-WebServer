@@ -529,7 +529,7 @@ ioServer.on('connection', (socket) => {
     console.log(gameServers);
     console.log("ping server");
     var test = io("wss://web-shooter-gameserver.onrender.com");
-    test.emit("ping");
+    test.emit("ping", ()=>console.log("pinged"));
     gameServers.get(socket.id).server.emit("ping");
   }
   socket.on("ping", (data) => {
