@@ -13,7 +13,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require("cookie-parser");
 
 const cors = require('cors');
-
+console.log("IP ENV: " + process.env.IP);
 var ip = (process.env.IP)?process.env.IP:"127.0.0.1";
 var gameServers = new Map();
 var http = require('http');
