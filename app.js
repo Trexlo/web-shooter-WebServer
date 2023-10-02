@@ -87,9 +87,9 @@ app.get('/login', (req, res) => {
 app.get('*', (req, res, next) => {
   console.log("----GET REQUEST----");
   console.log(req.url);
-  console.log(req);
+  //console.log(req);
 
-  console.log(res);
+  //console.log(res);
   console.log("----GET REQUEST----");
   if (req.session.user){
     next();
@@ -139,8 +139,8 @@ app.post('/signup', async (req, res) => {
 app.post('/guest', (req, res) => {
   console.log("----POST REQUEST----");
   console.log(req.url);
-  console.log(req);
-  console.log(res);
+  //console.log(req);
+  //console.log(res);
   console.log("----POST REQUEST----");
   if(req.session.user == undefined){
     req.session.user = new Player();
@@ -218,8 +218,8 @@ app.post('/changeAccountInfo', async (req,res)=>{
 app.post('*', (req, res, next) => {
   console.log("----POST REQUEST----");
   console.log(req.url);
-  console.log(req);
-  console.log(res);
+  //console.log(req);
+  //console.log(res);
   console.log("----POST REQUEST----");
   if (req.session.user)
     next();
