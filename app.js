@@ -17,7 +17,6 @@ console.log("IP ENV: " + process.env.IP);
 var ip = (process.env.IP)?process.env.IP:"127.0.0.1";
 var gameServers = new Map();
 var http = require('http');
-var https = require('https')
 const { writeFile, appendFile, readFile, readFileSync, writeFileSync, readdirSync } = require('fs');
 const { pgPool, editUsername, signup, login, getUserById, editImage, editNickname, getMaps, saveNewMap, loadMap, getPlayerByUUID, editColor, getMapsFromPlayer, saveExistingMap, saveGame, getSavesFromPlayer, loadGame, editEmail, editPassword, getPasswordForUser, comparePassword, getUserEmail } = require('./data/dao');
 const { Player, Lobby, GameServer } = require('./data/classes');
@@ -55,7 +54,7 @@ app.use(nocache());
 app.use(express.json({ limit: '25mb' }))
 app.use(express.urlencoded({ limit: '25mb', extended: true, parameterLimit: 100 }))
 app.use(cookieParser());
-app.set('trust proxy', 1);
+
 app.use(expressSession({
   store: new pgSession({
     pool: pgPool,                // Connection pool
@@ -489,13 +488,14 @@ app.get('*', (req, res, next) => {
 
 
 
-const httpsServer = https.createServer(app);
-// var server = app.listen(port, () => {
-//   console.log(`Example app listening on port ${port}`)
-// })
 
+var server = app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`)
+})
+server.keepAliveTimeout = 120 * 1000;
+server.headersTimeout = 120 * 1000;
 
-const ioServer = new Server(httpsServer, {
+const ioServer = new Server(server, {
   cors: true,
   origins: ["*"]
 });
