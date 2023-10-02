@@ -335,8 +335,10 @@ app.post('/startGame', async (req, res) => {
   if(lobby==undefined)return;
   console.log(lobby);
   lobby.gameServer =  await gameServers.get(req.body.serverId);
-  if(!lobby.isGameSave)
+  if(!lobby.isGameSave){
+    console.log("await create");
     await lobby.gameServer.server.emitWithAck("createLobby", { id: req.body.id, mapId: lobby.mapId, mapVersion:lobby.mapVersion, players: Array.from(lobby.players.values()) });
+  }
   else{
     var players = Array.from(lobby.players.values())
     console.log(req.body.positions);
@@ -361,6 +363,7 @@ app.post('/startGame', async (req, res) => {
       console.log(lobby.saveData.players.find(x=>x.number == p));
       console.log("-------");
     }
+    console.log("await create");
     await lobby.gameServer.server.emitWithAck("createLoadLobby", { id: req.body.id, mapId: lobby.mapId, mapVersion:lobby.mapVersion, players: Array.from(lobby.players.values()), loadData: lobby.saveData  });
   }
 
