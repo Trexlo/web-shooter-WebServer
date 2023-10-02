@@ -55,7 +55,7 @@ app.use(nocache());
 app.use(express.json({ limit: '25mb' }))
 app.use(express.urlencoded({ limit: '25mb', extended: true, parameterLimit: 100 }))
 app.use(cookieParser());
-
+app.set('trust proxy', 1);
 app.use(expressSession({
   store: new pgSession({
     pool: pgPool,                // Connection pool
