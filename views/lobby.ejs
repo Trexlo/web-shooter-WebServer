@@ -76,7 +76,7 @@
     const urlParams = new URLSearchParams(window.location.search);
     document.getElementById("id").value = urlParams.get("id");
     const myId="<%=player.id%>";
-    const socket = io("ws://<%=ip%>:3000", { query: { gameId:urlParams.get("id"),  playerId: "<%=player.id%>", at:"lobby" } });
+    const socket = io("wss://<%=ip%>:3000", { query: { gameId:urlParams.get("id"),  playerId: "<%=player.id%>", at:"lobby" } });
     var positions={}
     function moveUp(position, visual = false) {
         if(!visual)
