@@ -525,12 +525,13 @@ ioServer.on('connection', (socket) => {
     if(socket.handshake.query.overrideAddress == 'true'  && socket.handshake.query.ip) gameServerIp = socket.handshake.query.ip;
     console.log("IP: "+gameServerIp);
     console.log("UsePort: "+socket.handshake.query.usePort);
+    console.log((socket.handshake.query.usePort)?"wss://"+gameServerIp+":"+gameServerPort:"wss://"+gameServerIp);
     gameServers.set(socket.id, new GameServer(gameServerIp.toString(), gameServerPort, socket, ((socket.handshake.query.usePort)?io("wss://"+gameServerIp+":"+gameServerPort):io("wss://"+gameServerIp))));
     console.log(gameServers);
     console.log("ping server");
     var test = io("wss://web-shooter-gameserver.onrender.com");
     test.emit("ping", ()=>console.log("pinged"));
-    gameServers.get(socket.id).server.emit("ping");
+    gameServers.get(socket.id).server.emit("ping",()=>console.log("1pinged"));
   }
   socket.on("ping", (data) => {
     console.log("PONG");
