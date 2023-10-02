@@ -99,7 +99,7 @@
 </script>
 <script type="module">
   import { io } from 'https://cdn.socket.io/4.4.1/socket.io.esm.min.js';
-  const socket = io("wss://<%=ip%>:3000");
+  const socket = io("wss://<%=ip%>:443");
   socket.emit('ping');
   var lobbyListEl = document.getElementById("lobbyList");
   socket.on('lobbiesUpdate', (data)=>{
