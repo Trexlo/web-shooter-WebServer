@@ -40,7 +40,7 @@ const { Player, Lobby, GameServer } = require('./data/classes');
 
 //ping render gameserver
 try {
-  http.get({ 'host': 'https://web-shooter-gameserver.onrender.com', 'port': 443, 'path': '/' }, function (resp) {
+  http.get('https://web-shooter-gameserver.onrender.com', function (resp) {
     console.log("Pinged gameserver");
   });
 } catch (error) {
