@@ -17,6 +17,7 @@ console.log("IP ENV: " + process.env.IP);
 var ip = (process.env.IP)?process.env.IP:"127.0.0.1";
 var gameServers = new Map();
 var https = require('https');
+var http = require('http');
 const { writeFile, appendFile, readFile, readFileSync, writeFileSync, readdirSync } = require('fs');
 const { pgPool, editUsername, signup, login, getUserById, editImage, editNickname, getMaps, saveNewMap, loadMap, getPlayerByUUID, editColor, getMapsFromPlayer, saveExistingMap, saveGame, getSavesFromPlayer, loadGame, editEmail, editPassword, getPasswordForUser, comparePassword, getUserEmail } = require('./data/dao');
 const { Player, Lobby, GameServer } = require('./data/classes');
@@ -36,6 +37,15 @@ const { Player, Lobby, GameServer } = require('./data/classes');
 // } catch (error) {
 //   console.log(error);
 // }
+
+//ping render gameserver
+try {
+  http.get({ 'host': 'https://web-shooter-gameserver.onrender.com', 'port': 443, 'path': '/' }, function (resp) {
+    console.log("Pinged gameserver");
+  });
+} catch (error) {
+  console.log(error);
+}
 
 var maplist = null;
 var serverList = new Map();
@@ -261,7 +271,7 @@ app.post('/getServers', (req, res) => {
   var lobby = lobbies.get(  req.body.lobbyId);
   if(lobby!=undefined){
     if(lobby.host == req.session.user.id)
-      res.json({error:false, message:"OK", servers:Array.from(gameServers.entries()).map((s)=>  {return {id:s[0], ip:s[1].ip, port:s[1].port}})});
+      res.json({error:false, message:"OK", servers:Array.from(gameServers.entries()).map((s)=>  {return {id:s[0], url:s[1].ip+(s[1](s[1].port==-1)?"":(":"+s[1].port))}})});
     else{    res.json({error:true, message:"You are not the host"});}
   }else
     res.json({error:true, message:"No lobby"});
@@ -391,7 +401,7 @@ app.get('/game', async (req, res) => {
     console.log(lobby);
     console.log(lobby.gameServer);
     if(lobby.players.has(req.session.user.id))
-      res.render('game', {lobby: lobby, player:req.session.user, isHost: lobby.host == req.session.user.id, ip: lobby.gameServer.ip, port: lobby.gameServer.port});
+      res.render('game', {lobby: lobby, player:req.session.user, isHost: lobby.host == req.session.user.id, ip: lobby.gameServer.ip, port: lobby.gameServer.port, url:(lobby.gameServer.port==-1)?lobby.gameServer.ip:lobby.gameServer.ip+":"+lobby.gameServer.port});
     else res.render('error', {error:"You are not in this game"});
   }
 })
@@ -525,7 +535,7 @@ ioServer.on('connection', (socket) => {
     if(socket.handshake.query.overrideAddress == 'true'  && socket.handshake.query.ip) gameServerIp = socket.handshake.query.ip;
     console.log("IP: "+gameServerIp);
     console.log("UsePort: "+socket.handshake.query.usePort);
-    gameServers.set(socket.id, new GameServer(gameServerIp.toString(), gameServerPort, socket, ((socket.handshake.query.usePort=="true")?io("wss://"+gameServerIp+":"+gameServerPort):io("wss://"+gameServerIp))));
+    gameServers.set(socket.id, new GameServer(gameServerIp.toString(), ((socket.handshake.query.usePort=="true")?+gameServerPort:-1), socket, ((socket.handshake.query.usePort=="true")?io("wss://"+gameServerIp+":"+gameServerPort):io("wss://"+gameServerIp))));
     console.log(gameServers);
     console.log("ping server");
     gameServers.get(socket.id).server.emit("ping",()=>console.log("pinged"));

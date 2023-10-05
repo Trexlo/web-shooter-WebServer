@@ -506,8 +506,10 @@ function initSocket() {
     $(statusText).find('span').text("Connecting...")
     var ip = localStorage.getItem("serverIp");
     var port = localStorage.getItem("serverPort");
+    var url = localStorage.getItem("serverUrl");
     console.log("init with ip and port: " + ip+":"+port);
-    socket = io("wss://" + ip, {
+    console.log("init with url: " + url);
+    socket = io("wss://" + url, {
         //withCredentials: true,
         query: {
             gameId: gId,
