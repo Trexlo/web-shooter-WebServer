@@ -122,16 +122,18 @@ class Lobby {
 }
 
 class GameServer{
-  constructor(ip, port, client, server) {
+  constructor(ip, port, client, server, secure) {
     this.ip = ip;
     this.port = port;
     this.client = client;
     this.server = server;
+    this.secure = secure
   }
   ip;
   port;
   client;
   server;
+  secure;
 }
 
 module.exports = {Player, Lobby, GameServer, IngamePlayer, GameMap, GameSave}

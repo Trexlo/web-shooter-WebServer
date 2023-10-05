@@ -271,7 +271,7 @@ app.post('/getServers', (req, res) => {
   var lobby = lobbies.get(  req.body.lobbyId);
   if(lobby!=undefined){
     if(lobby.host == req.session.user.id)
-      res.json({error:false, message:"OK", servers:Array.from(gameServers.entries()).map((s)=>  {return {id:s[0], url:s[1].ip+((s[1].port==-1)?"":(":"+s[1].port))}})});
+      res.json({error:false, message:"OK", servers:Array.from(gameServers.entries()).map((s)=>  {return {id:s[0], url:s[1].ip+((s[1].port==-1)?"":(":"+s[1].port)), secure: s[1].secure}})});
     else{    res.json({error:true, message:"You are not the host"});}
   }else
     res.json({error:true, message:"No lobby"});
@@ -535,7 +535,7 @@ ioServer.on('connection', (socket) => {
     if(socket.handshake.query.overrideAddress == 'true'  && socket.handshake.query.ip) gameServerIp = socket.handshake.query.ip;
     console.log("IP: "+gameServerIp);
     console.log("UsePort: "+socket.handshake.query.usePort);
-    gameServers.set(socket.id, new GameServer(gameServerIp.toString(), ((socket.handshake.query.usePort=="true")?+gameServerPort:-1), socket, ((socket.handshake.query.usePort=="true")?io("wss://"+gameServerIp+":"+gameServerPort):io("wss://"+gameServerIp))));
+    gameServers.set(socket.id, new GameServer(gameServerIp.toString(), ((socket.handshake.query.usePort=="true")?+gameServerPort:-1), socket, ((socket.handshake.query.usePort=="true")?io("ws"+((socket.handshake.query.secure=="true")?'s':'')+"://"+gameServerIp+":"+gameServerPort):io("ws"+((socket.handshake.query.secure=="true")?'s':'')+"://"+gameServerIp)), socket.handshake.query.secure=="true"));
     console.log(gameServers);
     console.log("ping server");
     gameServers.get(socket.id).server.emit("ping",()=>console.log("pinged"));

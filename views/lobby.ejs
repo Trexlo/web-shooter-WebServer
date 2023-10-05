@@ -197,7 +197,7 @@
         console.log(serverData);
         if(!serverData.error){
             for(var s of serverData.servers){
-                const pingsocket = io(`wss://${s.url}`, { 
+                const pingsocket = io(`ws${((s.secure)?'s':'')}://${s.url}`, { 
                     query: {type:"pinger"}
                 });
                 console.log(pingsocket);
