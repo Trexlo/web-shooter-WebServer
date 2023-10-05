@@ -271,7 +271,7 @@ app.post('/getServers', (req, res) => {
   var lobby = lobbies.get(  req.body.lobbyId);
   if(lobby!=undefined){
     if(lobby.host == req.session.user.id)
-      res.json({error:false, message:"OK", servers:Array.from(gameServers.entries()).map((s)=>  {return {id:s[0], url:s[1].ip+(s[1](s[1].port==-1)?"":(":"+s[1].port))}})});
+      res.json({error:false, message:"OK", servers:Array.from(gameServers.entries()).map((s)=>  {return {id:s[0], url:s[1].ip+((s[1].port==-1)?"":(":"+s[1].port))}})});
     else{    res.json({error:true, message:"You are not the host"});}
   }else
     res.json({error:true, message:"No lobby"});
