@@ -207,7 +207,7 @@
                 pingsocket.emit('ping', ()=>{
                     console.log("ping came");
                     if(server==null){
-                        server = {id:s.id, ip:s.ip, port:s.port}
+                        server = {id:s.id, ip:s.ip, port:s.port, url: s.url}
                         console.log(server);
                         fetch('/startGame',{
                             method:'POST', 
