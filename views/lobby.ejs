@@ -236,7 +236,10 @@
                 method:'GET'
             }).then(res=>{
                 console.log(res);
-                startGame();
+                setTimeout(() => {
+                    if(server==null)
+                        startGame();
+                }, 1000);
             })
             setTimeout(() => {
                 if(server==null)
