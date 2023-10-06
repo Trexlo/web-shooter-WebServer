@@ -233,7 +233,10 @@
                 });
             }
             fetch('https://web-shooter-gameserver.onrender.com',{
-                method:'GET'
+                method:'GET',
+                headers:{
+                    "Access-Control-Allow-Origin": "*"
+                }
             }).then(res=>{
                 console.log(res);
                 setTimeout(() => {
