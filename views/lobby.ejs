@@ -203,7 +203,7 @@
                 console.log(pingsocket);
                 console.log("pinging");
                 
-               
+                
                 pingsocket.emit('ping', ()=>{
                     console.log("ping came");
                     if(server==null){
@@ -232,11 +232,21 @@
                     }
                 });
             }
+            fetch('https://web-shooter-gameserver.onrender.com',{
+                method:'GET'
+            }).then(res=>{
+                console.log(res);
+                startGame();
+            })
             setTimeout(() => {
                 if(server==null)
-                $("#info").text("No servers found");
-                $("#spinner").attr("hidden", true);
-                $("#info").css("margin-left","0px");
+                    $("#info").text("Waiting for Render server to deploy");
+            }, 1000);
+            setTimeout(() => {
+                if(server==null);
+                // $("#info").text("No servers found");
+                // $("#spinner").attr("hidden", true);
+                // $("#info").css("margin-left","0px");
             }, 3000);
             console.log("found no servers");
 
