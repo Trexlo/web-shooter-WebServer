@@ -204,38 +204,38 @@
                 console.log("pinging");
                 
                 
-                pingsocket.emit('ping', ()=>{
-                    console.log("ping came");
-                    if(server==null){
-                        server = {id:s.id, ip:s.ip, port:s.port, url: s.url}
-                        console.log(server);
-                        fetch('/startGame',{
-                            method:'POST', 
-                            headers: {
-                                "Content-Type": "application/json",
-                            },
-                            body: JSON.stringify({
-                                id: urlParams.get("id"),
-                                positions: positions,
-                                serverId: server.id,
-                            }
-                        )
-                        }).then(res=> res.json())
-                        .then(val=>{
-                            $("#info").text("Found server");
-                            $("#spinner").attr("hidden", true);
-                            $("#info").css("margin-left","0px");
-                            console.log(val);
-                        }).catch(err=>{
-                            console.log(err);
-                        });
-                    }
-                });
-            }
+            //     pingsocket.emit('ping', ()=>{
+            //         console.log("ping came");
+            //         if(server==null){
+            //             server = {id:s.id, ip:s.ip, port:s.port, url: s.url}
+            //             console.log(server);
+            //             fetch('/startGame',{
+            //                 method:'POST', 
+            //                 headers: {
+            //                     "Content-Type": "application/json",
+            //                 },
+            //                 body: JSON.stringify({
+            //                     id: urlParams.get("id"),
+            //                     positions: positions,
+            //                     serverId: server.id,
+            //                 }
+            //             )
+            //             }).then(res=> res.json())
+            //             .then(val=>{
+            //                 $("#info").text("Found server");
+            //                 $("#spinner").attr("hidden", true);
+            //                 $("#info").css("margin-left","0px");
+            //                 console.log(val);
+            //             }).catch(err=>{
+            //                 console.log(err);
+            //             });
+            //         }
+            //     });
+            // }
             fetch('https://web-shooter-gameserver.onrender.com',{
                 method:'GET',
                 headers:{
-                    "Access-Control-Allow-Origin": "*"
+                    "Accept":"*/*" 
                 }
             }).then(res=>{
                 console.log(res);
