@@ -1049,7 +1049,7 @@ function sendStateChange() {
 }
 
 
-var framerate = 60;
+var framerate = 600;
 var frameClock = new THREE.Clock()
 var deltaTime = 0;
 
