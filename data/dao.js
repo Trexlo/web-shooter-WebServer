@@ -156,7 +156,7 @@ async function saveExistingMap(player, mapId, name, type, data){
     return {mapId: res.rows[0].map_id, mapVersion:res.rows[0].map_version};
 }
 async function getMaps(){
-    var res = await pgPool.query( `SELECT map_id, max(map_version) as map_version, name, map_type FROM map group by map_id, name, map_type`);
+    var res = await pgPool.query( `SELECT map_id, max(map_version) as map_version, name, map_type FROM map group by map_id, name, map_type ORDER BY name ASC`);
     var maps = [];
     for (let r of res.rows){
         let m = new GameMap();
