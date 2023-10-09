@@ -246,8 +246,8 @@ app.get('/', async (req, res) => {
   if(maplist == null) maplist = await getMaps();
   var saves=[];
   if(!req.session.user.guest) saves =  await getSavesFromPlayer(req.session.user.id);
-  console.log(saves);
-  console.log("GET / "+req.socket.localAddress +","+ req.socket.remoteAddress+","+ip);
+  //console.log(saves);
+  //console.log("GET / "+req.socket.localAddress +","+ req.socket.remoteAddress+","+ip);
   res.render('main', { lobbies: getLobbies(), saves:saves, ip: ip, maps: maplist, player: req.session.user });
 })
 app.get('/account', async (req, res) => {
@@ -263,8 +263,8 @@ app.post('/createLobby', async (req, res) => {
   var map =  maplist.find(m=>m.id == mapIdAndVersion[0]);
   lobbies.set(id, new Lobby(id, name + " - " + map.name + " - "+map.type, req.session.user.id, null/*await gameServers.values().next().value.server*/, mapIdAndVersion[0], mapIdAndVersion[1], req.body.private, req.body.password, false))
   if(req.body.password != '') lobbies.get(id).players.set(req.session.user.id, req.session.user);
-  console.log(maplist);
-  console.log(Array.from(lobbies.values()));
+  //console.log(maplist);
+  //console.log(Array.from(lobbies.values()));
   res.redirect('lobby?id=' + id);
 })
 app.post('/getServers', (req, res) => {
@@ -282,12 +282,12 @@ app.post('/createLoadLobby', async (req, res) => {
   var map =  maplist.find(m=>m.id == save.mapId);
   var name = "Load game from "+save.savedOn.toLocaleString()+ " - " + map.name + " - "+map.type;
   var gameData = save.data;
-  console.log(save);
+  //console.log(save);
   if(req.body.name != undefined && req.body.name != "")name=req.body.name;
   lobbies.set(id, new Lobby(id, name, req.session.user.id, null, gameData.mapId, gameData.mapVersion, req.body.private, req.body.password, true, gameData))
   if(req.body.password != '') lobbies.get(id).players.set(req.session.user.id, req.session.user);
-  console.log(maplist);
-  console.log(Array.from(lobbies.values()));
+  //console.log(maplist);
+  //console.log(Array.from(lobbies.values()));
   res.redirect('lobby?id=' + id);
 })
 app.get('/lobby', async (req, res) => {
@@ -343,7 +343,7 @@ app.post('/startGame', async (req, res) => {
   }
   if (lobbies.has(req.body.id)) lobbies.get(req.body.id).started = true;
   if(lobby==undefined)return;
-  console.log(lobby);
+  //console.log(lobby);
   lobby.gameServer =  await gameServers.get(req.body.serverId);
   if(!lobby.isGameSave){
     console.log("await create");
@@ -351,13 +351,13 @@ app.post('/startGame', async (req, res) => {
   }
   else{
     var players = Array.from(lobby.players.values())
-    console.log(req.body.positions);
-    console.log(lobby);
+    //console.log(req.body.positions);
+    //console.log(lobby);
     for(var p in lobby.playerOrder){
-      console.log("_______");
-      console.log(p);
-      console.log(lobby.playerOrder[p]);
-      console.log(lobby.saveData.players.find(x=>x.number == p));
+      //console.log("_______");
+      //console.log(p);
+      //console.log(lobby.playerOrder[p]);
+      //console.log(lobby.saveData.players.find(x=>x.number == p));
       if(lobby.playerOrder[p].newId != null && lobby.playerOrder[p].newId != ''){  
         var player =lobby.saveData.players.find(x=>x.number == p);
         player.id = lobby.playerOrder[p].newId;
@@ -370,8 +370,8 @@ app.post('/startGame', async (req, res) => {
         lobby.saveData.players.find(x=>x.number == p).nickname = "didNotJoin";
         lobby.saveData.players.find(x=>x.number == p).ready = true;
       }
-      console.log(lobby.saveData.players.find(x=>x.number == p));
-      console.log("-------");
+      //console.log(lobby.saveData.players.find(x=>x.number == p));
+      //console.log("-------");
     }
     console.log("await create");
     await lobby.gameServer.server.emitWithAck("createLoadLobby", { id: req.body.id, mapId: lobby.mapId, mapVersion:lobby.mapVersion, players: Array.from(lobby.players.values()), loadData: lobby.saveData  });
@@ -398,8 +398,8 @@ app.get('/game', async (req, res) => {
     res.render('notFound', { data: "Game" });
   } else {
     var lobby=lobbies.get(req.query.id);
-    console.log(lobby);
-    console.log(lobby.gameServer);
+    //console.log(lobby);
+    //console.log(lobby.gameServer);
     if(lobby.players.has(req.session.user.id))
       res.render('game', {lobby: lobby, player:req.session.user, isHost: lobby.host == req.session.user.id, ip: lobby.gameServer.ip, port: lobby.gameServer.port, url:(lobby.gameServer.port==-1)?lobby.gameServer.ip:lobby.gameServer.ip+":"+lobby.gameServer.port});
     else res.render('error', {error:"You are not in this game"});
@@ -423,10 +423,10 @@ app.post('/createMap', async (req, res) => {
   else{
     try {
       var map = await loadMap(req.session.user.id, req.body.mapId, req.body.version, true);
-      console.log(map);
+      //console.log(map);
       res.send({error:false, map:map});
     } catch (error) {
-      console.log(error);
+      //console.log(error);
       res.send({error:true, error:error});
     }
   }
@@ -486,7 +486,7 @@ app.post('/changeNickname', async (req,res)=>{
     if(!req.session.user.guest)
       await editNickname(req.session.user.id, req.body.nickname);
     req.session.user.nickname = req.body.nickname;
-    console.log(req.session.user);
+    //console.log(req.session.user);
   }
   res.json("OK");
 });
@@ -525,7 +525,7 @@ ioServer.engine.use(sessionMiddleware);
 ioServer.on('connection', (socket) => {
   console.log('a user connected');
   console.log(socket.handshake.address);
-  console.log(socket);
+  //console.log(socket);
   
   if(socket.handshake.query.type && socket.handshake.query.type == 'server'){
     var gameServerIp = socket.handshake.address.substring(socket.handshake.address.lastIndexOf(':')+1);
@@ -536,7 +536,7 @@ ioServer.on('connection', (socket) => {
     console.log("IP: "+gameServerIp);
     console.log("UsePort: "+socket.handshake.query.usePort);
     gameServers.set(socket.id, new GameServer(gameServerIp.toString(), ((socket.handshake.query.usePort=="true")?+gameServerPort:-1), socket, ((socket.handshake.query.usePort=="true")?io("ws"+((socket.handshake.query.secure=="true")?'s':'')+"://"+gameServerIp+":"+gameServerPort):io("ws"+((socket.handshake.query.secure=="true")?'s':'')+"://"+gameServerIp)), socket.handshake.query.secure=="true"));
-    console.log(gameServers);
+    //console.log(gameServers);
     console.log("ping server");
     gameServers.get(socket.id).server.emit("ping",()=>console.log("pinged"));
   }
@@ -545,24 +545,24 @@ ioServer.on('connection', (socket) => {
   })
   socket.on("emptyLobby", (data) => {
     console.log("emptyLobby");
-    console.log(data);
+    //console.log(data);
     lobbies.delete(data.id);
     ioServer.emit("lobbiesUpdate", { lobbies: getLobbies() });
   })
   socket.on("requestMap", async (data, ack) => {
     console.log("reqMap");
-    console.log(data);
+    //console.log(data);
 
     var map = await loadMap(undefined, data.mapId, data.mapVersion, false);
-    console.log("MAPA");
-    console.log(map);
+    //console.log("MAPA");
+    //console.log(map);
     ack({map});
   })
   socket.on("movePlayer", (data)=>{
-    console.log(data);
+    //console.log(data);
     var lobby = lobbies.get(socket.handshake.query.gameId);
     var maxNum = Object.keys(lobby.playerOrder).length;
-    console.log(maxNum);
+    //console.log(maxNum);
     if(data.direction=="up"){
       var aPos = data.position
       var bPos=  (data.position-1 == -1)?maxNum-1:data.position-1;
@@ -581,10 +581,10 @@ ioServer.on('connection', (socket) => {
   })
   socket.on("joinedLobby", (data) => {
     console.log("joined");
-    console.log(data);
+    //console.log(data);
     socket.join(data.id);
 
-    console.log(socket.rooms);
+    //console.log(socket.rooms);
     if(lobbies.has(socket.handshake.query.gameId)){
       var lobby = lobbies.get(socket.handshake.query.gameId);
       if(lobby.players.has(socket.handshake.query.playerId)){
@@ -624,7 +624,7 @@ ioServer.on('connection', (socket) => {
   socket.on("disconnecting", (reason) => {
     console.log("disconnecting");
     console.log(reason);
-    console.log(socket);
+    //console.log(socket);
 
     if(socket.handshake.query.type && socket.handshake.query.type == 'server'){
       gameServers.delete(socket.id)
@@ -632,7 +632,7 @@ ioServer.on('connection', (socket) => {
 
     if(socket.handshake.query.at && socket.handshake.query.at=='lobby'){
       console.log("disconnection from lobby");
-      console.log(socket.handshake.query);
+      //console.log(socket.handshake.query);
       if(lobbies.has(socket.handshake.query.gameId)){
         var lobby = lobbies.get(socket.handshake.query.gameId);
         if(lobby.players.has(socket.handshake.query.playerId)){
