@@ -102,6 +102,8 @@
 
   fetch('https://web-shooter-gameserver.onrender.com', {
     method:'GET'
+  }).then((res)=>{
+    console.log("Pinged gameserver");
   });
 
   const socket = io("wss://web-shooter-webserver.onrender.com");
