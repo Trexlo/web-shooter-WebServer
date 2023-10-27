@@ -39,13 +39,13 @@ const { Player, Lobby, GameServer } = require('./data/classes');
 // }
 
 //ping render gameserver
-try {
-  https.get('https://web-shooter-gameserver.onrender.com', function (resp) {
-    console.log("Pinged gameserver");
-  });
-} catch (error) {
-  console.log(error);
-}
+// try {
+//   https.get('https://web-shooter-gameserver.onrender.com', function (resp) {
+//     console.log("Pinged gameserver");
+//   });
+// } catch (error) {
+//   console.log(error);
+// }
 
 var maplist = null;
 var serverList = new Map();
